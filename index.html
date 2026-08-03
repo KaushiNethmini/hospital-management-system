@@ -5,160 +5,530 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hospital Management System</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 30px; background-color: #f4f7f6; max-width: 800px; margin: auto; }
-        h1, h2 { color: #2c3e50; }
-        .card { background: white; padding: 15px; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .form-container, .container-box { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-top: 25px; }
-        label { display: block; margin-top: 10px; font-weight: bold; }
-        input, select, button { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { background-color: #27ae60; color: white; font-weight: bold; cursor: pointer; border: none; margin-top: 15px; }
-        button:hover { background-color: #219150; }
-        .btn-patient { background-color: #2980b9; }
-        .btn-patient:hover { background-color: #1f618d; }
-        .message { margin-top: 10px; font-weight: bold; }
-        .badge { display: inline-block; padding: 4px 8px; background-color: #f39c12; color: white; border-radius: 4px; font-size: 12px; }
+        :root {
+            --bg: #f4f8fc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --sidebar: #0d1b3d;
+            --sidebar-soft: #132852;
+            --border: #d8e4f2;
+            --shadow: 0 18px 45px rgba(14, 43, 96, 0.12);
+            --success: #0f9d58;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #eef4fb, #f8fbff 55%, #edf6ff);
+            color: var(--text);
+        }
+
+        .app-shell {
+            display: grid;
+            grid-template-columns: 270px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--sidebar), #102347);
+            color: white;
+            padding: 26px 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 32px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+        }
+
+        .brand-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #59a6ff, #1d4ed8);
+            display: grid;
+            place-items: center;
+            font-size: 1rem;
+        }
+
+        .sidebar nav {
+            display: grid;
+            gap: 10px;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: #dce9ff;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            background: transparent;
+            transition: 0.2s ease;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        .content {
+            padding: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .title-wrap h1 {
+            margin: 0 0 4px;
+            font-size: 1.9rem;
+            color: #122a58;
+        }
+
+        .title-wrap span {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--accent);
+            font-weight: 700;
+            background: #eaf1ff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            transition: 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: #d9e7ff;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 18px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            inset: auto -20px -28px auto;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.18), rgba(37, 99, 235, 0));
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #14315f;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 0.95fr 1.05fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid rgba(219, 229, 240, 0.9);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 24px;
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            border-radius: 18px 18px 0 0;
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
+        }
+
+        .card h2,
+        .card h3 {
+            margin: 0 0 18px;
+            color: #122a58;
+        }
+
+        .section-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #ecf4ff;
+            color: var(--accent);
+            border-radius: 999px;
+            padding: 5px 10px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .form-grid,
+        .stack-list {
+            display: grid;
+            gap: 14px;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 7px;
+        }
+
+        label {
+            font-weight: 700;
+            color: #23407a;
+            font-size: 0.95rem;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.98rem;
+            background: #fbfdff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            padding: 13px 18px;
+            border-radius: 12px;
+            font-weight: 800;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.24);
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.96;
+        }
+
+        .message {
+            margin-top: 12px;
+            font-weight: 800;
+            min-height: 20px;
+            border-radius: 10px;
+            padding: 10px 12px;
+            background: rgba(37, 99, 235, 0.06);
+        }
+
+        .doctor-list,
+        .appointments-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .doctor-item,
+        .appointment-item {
+            background: #f8fbff;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 14px 16px;
+        }
+
+        .doctor-item h4,
+        .appointment-item h4 {
+            margin: 0 0 8px;
+            color: #16315e;
+        }
+
+        .doctor-item p,
+        .appointment-item p {
+            margin: 4px 0;
+            color: #365078;
+            font-size: 0.93rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background-color: rgba(245, 158, 11, 0.18);
+            color: #a05a02;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        @media (max-width: 1100px) {
+            .app-shell { grid-template-columns: 1fr; }
+            .sidebar { padding-bottom: 10px; }
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid,
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-badge">❤</div>
+                <div>MedCare Admin</div>
+            </div>
+            <nav>
+                <a href="doctor.html">Doctors</a>
+                <a class="active" href="index.html">Patients</a>
+                <a href="appointments.html">Appointments</a>
+                <a href="reports.html">Reports</a>
+                <a href="billing.html">Billing</a>
+            </nav>
+        </aside>
 
-    <h1>Hospital Management System</h1>
+        <main class="content">
+            <div class="topbar">
+                <div class="title-wrap">
+                    <h1>Patient Management</h1>
+                    <span>Hospital administration dashboard</span>
+                </div>
+                <div class="header-actions">
+                    <a class="nav-link" href="doctor.html">Doctor Module</a>
+                    <a class="nav-link" href="appointments.html">Appointment Module</a>
+                    <a class="nav-link" href="reports.html">Reports Module</a>
+                    <a class="nav-link" href="billing.html">Billing Module</a>
+                </div>
+            </div>
 
-    <!-- SECTION 1: Patient Registration -->
-    <div class="form-container">
-        <h2>1. Patient Registration</h2>
-        <form id="patient-form" onsubmit="return false;">
-            <label for="full_name">Full Name:</label>
-            <input type="text" id="full_name" placeholder="e.g. Jane Doe">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Patients Registered</div>
+                    <div class="stat-value" id="patientCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Available Doctors</div>
+                    <div class="stat-value" id="doctorCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Appointments Booked</div>
+                    <div class="stat-value" id="appointmentCount">0</div>
+                </div>
+            </div>
 
-            <label for="dob">Date of Birth:</label>
-            <input type="date" id="dob">
+            <div class="dashboard-grid">
+                <div class="card">
+                    <div class="section-pill">Patient Intake</div>
+                    <h2>Patient Registration</h2>
+                    <form id="patient-form" class="form-grid">
+                        <div class="form-group">
+                            <label for="full_name">Full Name</label>
+                            <input type="text" id="full_name" placeholder="e.g. Jane Doe">
+                        </div>
 
-            <label for="gender">Gender:</label>
-            <select id="gender">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-                <option value="Other">Other</option>
-            </select>
+                        <div class="form-group">
+                            <label for="dob">Date of Birth</label>
+                            <input type="date" id="dob">
+                        </div>
 
-            <label for="phone">Phone Number:</label>
-            <input type="text" id="phone" placeholder="e.g. 0771234567">
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <select id="gender">
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
 
-            <label for="address">Address:</label>
-            <input type="text" id="address" placeholder="e.g. 123 Main St">
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="text" id="phone" placeholder="e.g. 0771234567">
+                        </div>
 
-            <button type="button" class="btn-patient" onclick="handlePatientRegister()">Register Patient</button>
-        </form>
-        <div id="patient-message" class="message"></div>
-    </div>
+                        <div class="form-group">
+                            <label for="address">Address</label>
+                            <input type="text" id="address" placeholder="e.g. 123 Main St">
+                        </div>
 
-    <!-- SECTION 2: Available Doctors -->
-    <div class="container-box">
-        <h2>Available Doctors</h2>
-        <div id="doctors-list">Loading doctors...</div>
-    </div>
+                        <button type="submit">Register Patient</button>
+                    </form>
+                    <div id="patient-message" class="message"></div>
+                </div>
 
-    <!-- SECTION 3: Book Appointment -->
-    <div class="form-container">
-        <h2>2. Book an Appointment</h2>
-        <form id="booking-form">
-            <label for="patient_id">Patient ID:</label>
-            <input type="number" id="patient_id" placeholder="Enter Patient ID (e.g. 1)" required>
+                <div class="card">
+                    <div class="section-pill">Scheduling</div>
+                    <h2>Book Appointment</h2>
+                    <form id="booking-form" class="form-grid">
+                        <div class="form-group">
+                            <label for="patient_id">Patient ID</label>
+                            <input type="number" id="patient_id" placeholder="Enter Patient ID (e.g. 1)" required>
+                        </div>
 
-            <label for="doctor_id">Doctor ID:</label>
-            <input type="number" id="doctor_id" placeholder="Enter Doctor ID (e.g. 1)" required>
+                        <div class="form-group">
+                            <label for="doctor_id">Doctor ID</label>
+                            <input type="number" id="doctor_id" placeholder="Enter Doctor ID (e.g. 1)" required>
+                        </div>
 
-            <label for="appointment_date">Appointment Date & Time:</label>
-            <input type="datetime-local" id="appointment_date" required>
+                        <div class="form-group">
+                            <label for="appointment_date">Appointment Date & Time</label>
+                            <input type="datetime-local" id="appointment_date" required>
+                        </div>
 
-            <button type="submit">Book Appointment</button>
-        </form>
-        <div id="booking-message" class="message"></div>
-    </div>
+                        <button type="submit">Book Appointment</button>
+                    </form>
+                    <div id="booking-message" class="message"></div>
+                </div>
+            </div>
 
-    <!-- SECTION 4: Booked Appointments -->
-    <div class="container-box">
-        <h2>Booked Appointments</h2>
-        <div id="appointments-list">Loading appointments...</div>
+            <div class="dashboard-grid" style="margin-top: 22px;">
+                <div class="card">
+                    <div class="section-pill">Care Team</div>
+                    <h3>Available Doctors</h3>
+                    <div id="doctors-list" class="doctor-list">Loading doctors...</div>
+                </div>
+
+                <div class="card">
+                    <div class="section-pill">Today’s Schedule</div>
+                    <h3>Booked Appointments</h3>
+                    <div id="appointments-list" class="appointments-list">Loading appointments...</div>
+                </div>
+            </div>
+        </main>
     </div>
 
     <script>
-        // 1. Patient Registration Handler
-      async function handlePatientRegister() {
-    console.log("1. Register button clicked!"); // Debug Log
+        async function handlePatientRegister() {
+            const msgDiv = document.getElementById('patient-message');
+            msgDiv.style.color = '#2563eb';
+            msgDiv.innerText = 'Connecting to backend...';
 
-    const msgDiv = document.getElementById('patient-message');
-    msgDiv.style.color = 'blue';
-    msgDiv.innerText = 'Connecting to backend...';
+            const full_name = document.getElementById('full_name').value.trim();
+            const dob = document.getElementById('dob').value;
+            const gender = document.getElementById('gender').value;
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
 
-    const full_name = document.getElementById('full_name').value.trim();
-    const dob = document.getElementById('dob').value;
-    const gender = document.getElementById('gender').value;
-    const phone = document.getElementById('phone').value.trim();
-    const address = document.getElementById('address').value.trim();
-
-    if (!full_name || !dob || !phone) {
-        msgDiv.style.color = 'red';
-        msgDiv.innerText = 'Please fill out Full Name, DOB, and Phone Number.';
-        return;
-    }
-
-    const payload = { full_name, dob, gender, phone, address };
-    console.log("2. Sending payload:", payload); // Debug Log
-
-    try {
-        console.log("3. Calling fetch()..."); // Debug Log
-        const response = await fetch('http://127.0.0.1:5000/api/patients', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-
-        console.log("4. Response received:", response.status); // Debug Log
-        const result = await response.json();
-
-        if (response.ok) {
-            msgDiv.style.color = 'green';
-            msgDiv.innerText = `Registered! Generated Patient ID: ${result.patient_id}`;
-            document.getElementById('patient-form').reset();
-
-            const patientIdInput = document.getElementById('patient_id');
-            if (patientIdInput) {
-                patientIdInput.value = result.patient_id;
+            if (!full_name || !dob || !phone) {
+                msgDiv.style.color = '#ef4444';
+                msgDiv.innerText = 'Please fill out Full Name, DOB, and Phone Number.';
+                return;
             }
-        } else {
-            msgDiv.style.color = 'red';
-            msgDiv.innerText = 'Database Error: ' + (result.error || 'Unknown error');
+
+            const payload = { full_name, dob, gender, phone, address };
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/api/patients', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const text = await response.text();
+                let result = {};
+                try {
+                    result = JSON.parse(text);
+                } catch {
+                    result = { error: text || 'Unknown server error' };
+                }
+
+                if (response.ok) {
+                    msgDiv.style.color = '#0f9d58';
+                    msgDiv.innerText = `Registered! Generated Patient ID: ${result.patient_id}`;
+                    document.getElementById('patient-form').reset();
+
+                    const patientIdInput = document.getElementById('patient_id');
+                    if (patientIdInput) {
+                        patientIdInput.value = result.patient_id;
+                    }
+                    fetchPatients();
+                    fetchAppointments();
+                } else {
+                    msgDiv.style.color = '#ef4444';
+                    msgDiv.innerText = 'Database Error: ' + (result.error || 'Unknown error');
+                }
+            } catch (err) {
+                msgDiv.style.color = '#ef4444';
+                msgDiv.innerText = 'Failed to connect: ' + err.message;
+            }
         }
-    } catch (err) {
-        console.error("5. Catch Error Caught:", err); // Debug Log
-        msgDiv.style.color = 'red';
-        msgDiv.innerText = 'Failed to connect: ' + err.message;
-    }
-}
 
-            
-
-
-        // 2. Fetch Doctors List
         async function fetchDoctors() {
             try {
                 const response = await fetch('http://localhost:5000/api/doctors');
-                const doctors = await response.json();
+                const text = await response.text();
+                const doctors = text ? JSON.parse(text) : [];
                 const container = document.getElementById('doctors-list');
+                const countElem = document.getElementById('doctorCount');
                 container.innerHTML = '';
 
-                if (doctors.length === 0) {
+                if (!Array.isArray(doctors) || doctors.length === 0) {
                     container.innerHTML = '<p>No doctors found.</p>';
+                    countElem.textContent = '0';
                     return;
                 }
 
+                countElem.textContent = doctors.length;
+
                 doctors.forEach(doc => {
                     const card = document.createElement('div');
-                    card.className = 'card';
+                    card.className = 'doctor-item';
                     card.innerHTML = `
-                        <h3>Doctor ID: ${doc.doctor_id}</h3>
-                        <p><strong>Department:</strong> ${doc.department}</p>
+                        <h4>${doc.doctor_name}</h4>
+                        <p><strong>ID:</strong> ${doc.id}</p>
                         <p><strong>Specialization:</strong> ${doc.specialization}</p>
+                        <p><strong>Phone:</strong> ${doc.phone}</p>
+                        <p><strong>Room:</strong> ${doc.room_no}</p>
                     `;
                     container.appendChild(card);
                 });
@@ -167,24 +537,28 @@
             }
         }
 
-        // 3. Fetch Appointments List
         async function fetchAppointments() {
             try {
                 const response = await fetch('http://localhost:5000/api/appointments');
-                const appointments = await response.json();
+                const text = await response.text();
+                const appointments = text ? JSON.parse(text) : [];
                 const container = document.getElementById('appointments-list');
+                const countElem = document.getElementById('appointmentCount');
                 container.innerHTML = '';
 
-                if (appointments.length === 0) {
+                if (!Array.isArray(appointments) || appointments.length === 0) {
                     container.innerHTML = '<p>No appointments booked yet.</p>';
+                    countElem.textContent = '0';
                     return;
                 }
 
+                countElem.textContent = appointments.length;
+
                 appointments.forEach(app => {
                     const card = document.createElement('div');
-                    card.className = 'card';
+                    card.className = 'appointment-item';
                     card.innerHTML = `
-                        <h3>Appointment ID: ${app.appointment_id || app.id}</h3>
+                        <h4>Appointment ID: ${app.appointment_id || app.id}</h4>
                         <p><strong>Patient ID:</strong> ${app.patient_id}</p>
                         <p><strong>Doctor ID:</strong> ${app.doctor_id}</p>
                         <p><strong>Date & Time:</strong> ${new Date(app.appointment_date).toLocaleString()}</p>
@@ -197,7 +571,22 @@
             }
         }
 
-        // 4. Appointment Booking Handler
+        async function fetchPatients() {
+            try {
+                const response = await fetch('http://localhost:5000/api/patients');
+                const text = await response.text();
+                const patients = text ? JSON.parse(text) : [];
+                document.getElementById('patientCount').textContent = Array.isArray(patients) ? patients.length : '0';
+            } catch (err) {
+                document.getElementById('patientCount').textContent = '0';
+            }
+        }
+
+        document.getElementById('patient-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await handlePatientRegister();
+        });
+
         document.getElementById('booking-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const msgDiv = document.getElementById('booking-message');
@@ -215,26 +604,32 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                const result = await response.json();
+                const text = await response.text();
+                let result = {};
+                try {
+                    result = JSON.parse(text);
+                } catch {
+                    result = { error: text || 'Unknown server error' };
+                }
 
                 if (response.ok) {
-                    msgDiv.style.color = 'green';
+                    msgDiv.style.color = '#0f9d58';
                     msgDiv.innerText = 'Appointment booked successfully!';
                     document.getElementById('booking-form').reset();
                     fetchAppointments();
                 } else {
-                    msgDiv.style.color = 'red';
-                    msgDiv.innerText = 'Error: ' + result.error;
+                    msgDiv.style.color = '#ef4444';
+                    msgDiv.innerText = 'Error: ' + (result.error || 'Unknown error');
                 }
             } catch (err) {
-                msgDiv.style.color = 'red';
+                msgDiv.style.color = '#ef4444';
                 msgDiv.innerText = 'Failed to connect to server.';
             }
         });
 
-        // Load Doctors and Appointments on page load
         fetchDoctors();
         fetchAppointments();
+        fetchPatients();
     </script>
 </body>
 </html>

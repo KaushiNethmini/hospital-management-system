@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments Management</title>
+    <style>
+        :root {
+            --bg: #f4f8fc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --sidebar: #0d1b3d;
+            --border: #d8e4f2;
+            --shadow: 0 18px 45px rgba(14, 43, 96, 0.12);
+            --danger: #ef4444;
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #eef4fb, #f8fbff 55%, #edf6ff);
+            color: var(--text);
+        }
+        .app-shell { display: grid; grid-template-columns: 270px 1fr; min-height: 100vh; }
+        .sidebar {
+            background: linear-gradient(180deg, var(--sidebar), #102347);
+            color: white;
+            padding: 26px 20px;
+        }
+        .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; font-weight: 800; }
+        .brand-badge {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: linear-gradient(135deg, #59a6ff, #1d4ed8);
+            display: grid; place-items: center;
+        }
+        .sidebar nav { display: grid; gap: 10px; }
+        .sidebar a {
+            text-decoration: none; color: #dce9ff; padding: 12px 14px; border-radius: 12px;
+            font-weight: 700; background: transparent; transition: 0.2s ease;
+        }
+        .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.12); color: white; }
+        .content { padding: 28px; }
+        .topbar {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 16px; margin-bottom: 24px; flex-wrap: wrap;
+        }
+        .title-wrap h1 { margin: 0 0 4px; font-size: 1.9rem; color: #122a58; }
+        .title-wrap span { color: var(--muted); font-size: 0.95rem; }
+        .header-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+        .nav-link {
+            text-decoration: none; color: var(--accent); font-weight: 700;
+            background: #eaf1ff; padding: 10px 14px; border-radius: 10px;
+        }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 22px; }
+        .stat-card {
+            background: var(--card); border: 1px solid var(--border); border-radius: 18px;
+            box-shadow: var(--shadow); padding: 18px 20px;
+        }
+        .stat-label { color: var(--muted); font-weight: 700; font-size: 0.88rem; margin-bottom: 8px; }
+        .stat-value { font-size: 1.55rem; color: #14315f; font-weight: 800; }
+        .card {
+            background: white; border: 1px solid rgba(219,229,240,0.9); border-radius: 18px;
+            box-shadow: var(--shadow); padding: 24px; position: relative;
+        }
+        .card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(135deg, #2563eb, #0ea5e9); border-radius: 18px 18px 0 0;
+        }
+        .card h2 { margin: 0 0 18px; color: #122a58; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #14315f; color: white; }
+        button {
+            background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none;
+            padding: 8px 12px; cursor: pointer; border-radius: 10px; font-weight: 700;
+        }
+        @media (max-width: 1100px) { .app-shell { grid-template-columns: 1fr; } }
+        @media (max-width: 900px) { .stats-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-badge">❤</div>
+                <div>MedCare Admin</div>
+            </div>
+            <nav>
+                <a href="doctor.html">Doctors</a>
+                <a href="index.html">Patients</a>
+                <a class="active" href="appointments.html">Appointments</a>
+                <a href="reports.html">Reports</a>
+                <a href="billing.html">Billing</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <div class="topbar">
+                <div class="title-wrap">
+                    <h1>Appointments Management</h1>
+                    <span>Schedule oversight and cancellation workflow</span>
+                </div>
+                <div class="header-actions">
+                    <a class="nav-link" href="index.html">Patient Module</a>
+                    <a class="nav-link" href="doctor.html">Doctor Module</a>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Appointments</div>
+                    <div class="stat-value" id="appointmentCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Patients Scheduled</div>
+                    <div class="stat-value" id="patientCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Doctors Assigned</div>
+                    <div class="stat-value" id="doctorCount">0</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Appointment List</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Patient Name</th>
+                            <th>Doctor Name</th>
+                            <th>Date & Time</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsTableBody">
+                        <tr><td colspan="5">Loading appointments...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function fetchAppointments() {
+            try {
+                const response = await fetch('http://localhost:5000/api/appointments');
+                const text = await response.text();
+                const appointments = text ? JSON.parse(text) : [];
+                const tableBody = document.getElementById('appointmentsTableBody');
+                const countElem = document.getElementById('appointmentCount');
+                tableBody.innerHTML = '';
+
+                if (!Array.isArray(appointments) || appointments.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5">No appointments found.</td></tr>';
+                    countElem.textContent = '0';
+                    return;
+                }
+
+                countElem.textContent = appointments.length;
+                document.getElementById('patientCount').textContent = new Set(appointments.map(a => a.patient_id)).size;
+                document.getElementById('doctorCount').textContent = new Set(appointments.map(a => a.doctor_id)).size;
+
+                appointments.forEach(app => {
+                    const formattedDate = new Date(app.appointment_datetime).toLocaleString();
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${app.appointment_id || app.id}</td>
+                        <td>${app.patient_name}</td>
+                        <td>${app.doctor_name}</td>
+                        <td>${formattedDate}</td>
+                        <td><button onclick="cancelAppointment(${app.appointment_id || app.id})">Cancel</button></td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error fetching appointments:', error);
+                document.getElementById('appointmentsTableBody').innerHTML = '<tr><td colspan="5">Failed to load appointments.</td></tr>';
+            }
+        }
+
+        async function cancelAppointment(id) {
+            if (confirm('Are you sure you want to cancel this appointment?')) {
+                try {
+                    const response = await fetch(`http://localhost:5000/api/appointments/${id}`, {
+                        method: 'DELETE'
+                    });
+                    if (!response.ok) throw new Error('Failed to cancel appointment');
+                    alert('Appointment cancelled successfully!');
+                    fetchAppointments();
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Failed to cancel appointment');
+                }
+            }
+        }
+
+        fetchAppointments();
+    </script>
+</body>
+</html>

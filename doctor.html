@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Management</title>
+    <style>
+        :root {
+            --bg: #f4f8fc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --accent: #2563eb;
+            --accent-2: #0ea5e9;
+            --danger: #ef4444;
+            --sidebar: #0d1b3d;
+            --sidebar-soft: #132852;
+            --border: #d8e4f2;
+            --success: #0f9d58;
+            --shadow: 0 18px 45px rgba(14, 43, 96, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #eef4fb, #f8fbff 55%, #edf6ff);
+            color: var(--text);
+        }
+
+        .app-shell {
+            display: grid;
+            grid-template-columns: 270px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: linear-gradient(180deg, var(--sidebar), #102347);
+            color: white;
+            padding: 26px 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            font-weight: 800;
+            letter-spacing: 0.4px;
+        }
+
+        .brand-badge {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #59a6ff, #1d4ed8);
+            display: grid;
+            place-items: center;
+            font-size: 1rem;
+        }
+
+        .sidebar nav {
+            display: grid;
+            gap: 10px;
+        }
+
+        .sidebar a {
+            text-decoration: none;
+            color: #dce9ff;
+            padding: 12px 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            background: transparent;
+            transition: 0.2s ease;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+        }
+
+        .content {
+            padding: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .title-wrap h1 {
+            margin: 0 0 4px;
+            font-size: 1.8rem;
+            color: #122a58;
+        }
+
+        .title-wrap span {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--accent);
+            font-weight: 700;
+            background: #eaf1ff;
+            padding: 10px 14px;
+            border-radius: 10px;
+            transition: 0.2s ease;
+        }
+
+        .nav-link:hover {
+            background: #d9e7ff;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 18px 20px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .stat-value {
+            font-size: 1.55rem;
+            font-weight: 800;
+            color: #14315f;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 0.95fr 1.35fr;
+            gap: 22px;
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid rgba(219, 229, 240, 0.9);
+            border-radius: 18px;
+            box-shadow: var(--shadow);
+            padding: 24px;
+        }
+
+        .card h3 {
+            margin: 0 0 18px;
+            font-size: 1.2rem;
+            color: #122a58;
+        }
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            position: relative;
+            min-width: 240px;
+            flex: 1;
+        }
+
+        .search-box input {
+            padding-left: 40px;
+        }
+
+        .search-box::before {
+            content: "🔎";
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 0.9rem;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: grid;
+            gap: 7px;
+        }
+
+        label {
+            font-weight: 700;
+            color: #23407a;
+            font-size: 0.95rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 0.98rem;
+            background: #fbfdff;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        button {
+            border: none;
+            cursor: pointer;
+            padding: 13px 18px;
+            border-radius: 12px;
+            font-weight: 800;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.24);
+            transition: transform 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            opacity: 0.96;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #0f172a, #23407a);
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 13px 14px;
+            text-align: left;
+            border-bottom: 1px solid #e7edf6;
+            font-size: 0.95rem;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #f8fbff;
+        }
+
+        tbody tr:hover {
+            background: #edf4ff;
+        }
+
+        .empty-state {
+            color: var(--muted);
+            padding: 18px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        @media (max-width: 1100px) {
+            .app-shell {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                padding-bottom: 10px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .stats-grid,
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-shell">
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-badge">❤</div>
+                <div>MedCare Admin</div>
+            </div>
+            <nav>
+                <a class="active" href="#">Doctors</a>
+                <a href="#">Patients</a>
+                <a href="#">Appointments</a>
+                <a href="#">Reports</a>
+                <a href="#">Settings</a>
+            </nav>
+        </aside>
+
+        <main class="content">
+            <div class="topbar">
+                <div class="title-wrap">
+                    <h1>Doctor Management</h1>
+                    <span>Hospital administration dashboard</span>
+                </div>
+                <div class="header-actions">
+                    <a class="nav-link" href="index.html">&larr; Patient Module</a>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Doctors</div>
+                    <div class="stat-value" id="doctorCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Specialties</div>
+                    <div class="stat-value" id="specialtyCount">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Active Rooms</div>
+                    <div class="stat-value" id="roomCount">0</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card">
+                    <h3>Add New Doctor</h3>
+                    <form id="doctorForm" class="form-grid">
+                        <div class="form-group">
+                            <label for="doctorName">Doctor Name</label>
+                            <input type="text" id="doctorName" placeholder="Enter doctor name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="specialization">Specialization / Department</label>
+                            <input type="text" id="specialization" placeholder="e.g. Cardiology" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="text" id="phone" placeholder="Enter phone number" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="roomNumber">Room Number</label>
+                            <input type="text" id="roomNumber" placeholder="Enter room number" required>
+                        </div>
+
+                        <button type="submit">Register Doctor</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h3>Registered Doctors</h3>
+                    <div class="toolbar">
+                        <div class="search-box" style="max-width: 280px;">
+                            <input id="doctorSearch" type="text" placeholder="Search doctor or specialty">
+                        </div>
+                    </div>
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Specialization</th>
+                                    <th>Phone</th>
+                                    <th>Room No</th>
+                                </tr>
+                            </thead>
+                            <tbody id="doctorsTableBody">
+                                <!-- Loaded dynamically via JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript to Handle Form Submission and Fetch Data -->
+    <script>
+        let allDoctors = [];
+
+        function renderTable(doctors) {
+            const tableBody = document.getElementById('doctorsTableBody');
+            tableBody.innerHTML = '';
+
+            if (!doctors.length) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5" class="empty-state">No doctors found.</td>`;
+                tableBody.appendChild(row);
+                return;
+            }
+
+            doctors.forEach(doc => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${doc.id}</td>
+                    <td>${doc.doctor_name}</td>
+                    <td>${doc.specialization}</td>
+                    <td>${doc.phone}</td>
+                    <td>${doc.room_no}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function updateStats(doctors) {
+            const uniqueSpecialties = new Set(doctors.map(doc => doc.specialization.trim()).filter(Boolean));
+            document.getElementById('doctorCount').textContent = doctors.length;
+            document.getElementById('specialtyCount').textContent = uniqueSpecialties.size;
+            document.getElementById('roomCount').textContent = doctors.length;
+        }
+
+        async function fetchDoctors() {
+            try {
+                const response = await fetch('http://localhost:5000/api/doctors');
+                const doctors = await response.json();
+                allDoctors = doctors;
+                renderTable(doctors);
+                updateStats(doctors);
+            } catch (error) {
+                console.error('Error fetching doctors:', error);
+            }
+        }
+
+        function filterDoctors() {
+            const query = document.getElementById('doctorSearch').value.trim().toLowerCase();
+            const filtered = allDoctors.filter(doc => {
+                return (
+                    doc.doctor_name.toLowerCase().includes(query) ||
+                    doc.specialization.toLowerCase().includes(query) ||
+                    doc.phone.toLowerCase().includes(query) ||
+                    String(doc.room_no).toLowerCase().includes(query)
+                );
+            });
+            renderTable(filtered);
+        }
+
+        window.onload = fetchDoctors;
+
+        document.getElementById('doctorSearch').addEventListener('input', filterDoctors);
+
+        document.getElementById('doctorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const doctorData = {
+                doctor_name: document.getElementById('doctorName').value,
+                specialization: document.getElementById('specialization').value,
+                phone: document.getElementById('phone').value,
+                room_no: document.getElementById('roomNumber').value
+            };
+
+            try {
+                const response = await fetch('http://localhost:5000/api/doctors', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(doctorData)
+                });
+
+                const text = await response.text();
+                let result = {};
+
+                try {
+                    result = JSON.parse(text);
+                } catch {
+                    result = { error: text || 'Unknown server error' };
+                }
+
+                if (!response.ok) {
+                    throw new Error(result.error || 'Failed to register doctor');
+                }
+
+                alert('Doctor registered successfully!');
+                e.target.reset();
+                fetchDoctors();
+            } catch (error) {
+                console.error('Error:', error);
+                alert(error.message || 'Failed to register doctor');
+            }
+        });
+    </script>
+</body>
+</html>
