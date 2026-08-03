@@ -148,7 +148,7 @@
     <script>
         async function fetchAppointments() {
             try {
-                const response = await fetch('http://localhost:5000/api/appointments');
+                const response = await fetch('/api/appointments');
                 const text = await response.text();
                 const appointments = text ? JSON.parse(text) : [];
                 const tableBody = document.getElementById('appointmentsTableBody');
@@ -186,7 +186,7 @@
         async function cancelAppointment(id) {
             if (confirm('Are you sure you want to cancel this appointment?')) {
                 try {
-                    const response = await fetch(`http://localhost:5000/api/appointments/${id}`, {
+                    const response = await fetch(`/api/appointments/${id}`, {
                         method: 'DELETE'
                     });
                     if (!response.ok) throw new Error('Failed to cancel appointment');

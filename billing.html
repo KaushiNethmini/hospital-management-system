@@ -192,7 +192,7 @@
     <script>
         async function fetchBills() {
             try {
-                const response = await fetch('http://localhost:5000/api/billing');
+                const response = await fetch('/api/billing');
                 const text = await response.text();
                 const bills = text ? JSON.parse(text) : [];
                 const tableBody = document.getElementById('billingTableBody');
@@ -245,7 +245,7 @@
             };
 
             try {
-                const response = await fetch('http://localhost:5000/api/billing', {
+                const response = await fetch('/api/billing', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(billData)

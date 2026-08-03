@@ -195,7 +195,7 @@
     <script>
         async function fetchReports() {
             try {
-                const response = await fetch('http://localhost:5000/api/reports');
+                const response = await fetch('/api/reports');
                 const text = await response.text();
                 const reports = text ? JSON.parse(text) : [];
                 const tableBody = document.getElementById('reportsTableBody');
@@ -231,7 +231,7 @@
 
         async function loadOverview() {
             try {
-                const response = await fetch('http://localhost:5000/api/admin/overview');
+                const response = await fetch('/api/admin/overview');
                 const text = await response.text();
                 const data = text ? JSON.parse(text) : {};
                 if (data.doctors) document.getElementById('doctorCount').textContent = data.doctors.total;
@@ -255,7 +255,7 @@
             };
 
             try {
-                const response = await fetch('http://localhost:5000/api/reports', {
+                const response = await fetch('/api/reports', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(reportData)
