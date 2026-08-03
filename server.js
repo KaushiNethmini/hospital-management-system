@@ -50,30 +50,10 @@ const db = mysql.createConnection({
 
 db.connect((err) => {
     if (err) {
-        console.error('Database connection failed:', err);
+        console.log('MySQL Notice:', err.message);
         return;
     }
     console.log('Connected to MySQL Database.');
-
-    const createAppointmentsTableSql = `
-        CREATE TABLE IF NOT EXISTS appointments (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            patient_id INT NOT NULL,
-            doctor_id INT NOT NULL,
-            appointment_datetime DATETIME NOT NULL,
-            status VARCHAR(50) DEFAULT 'Pending',
-            FOREIGN KEY (patient_id) REFERENCES patients(id),
-            FOREIGN KEY (doctor_id) REFERENCES doctors(id)
-        )
-    `;
-
-    db.query(createAppointmentsTableSql, (tableErr) => {
-        if (tableErr) {
-            console.error('Appointments table setup failed:', tableErr);
-        } else {
-            console.log('Appointments table ready.');
-        }
-    });
 });
 
 // Get all doctors
@@ -300,3 +280,5 @@ app.get('/api/admin/overview', (req, res) => {
         });
     });
 });
+
+module.exports = app;
